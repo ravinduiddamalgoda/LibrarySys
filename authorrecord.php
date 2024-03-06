@@ -74,13 +74,12 @@ $rows = mysqli_query($conn, "SELECT * FROM author ORDER BY authorid DESC");
 <div class="navigation">
         <a href="bookreport.php">Book Report</a>
         <a href="addbook.php" >Add Book</a>
-        <!-- <a href="reservebookadmin.html">Book Reservation</a> -->
         <a href="deleteuser.php">User Report</a>
         <a href="issuebook.php">Issue Book</a>
         <a href="issuebookreport.php">Issue Report</a>
-        <a href="">Book Orders</a>
         <a href="addauthor.php">Add Author</a>
         <a href="authorrecord.php" class="active">Author Record</a>
+        <a href="blacklist.php">BlackList</a>
         
     </div>
 
