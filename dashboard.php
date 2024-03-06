@@ -10,6 +10,15 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+session_start();
+
+if (isset($_SESSION['user_id'])) {
+    $userId = $_SESSION['user_id'];
+} else {
+    echo "User ID not found in session.";
+}
+
+
 $category_filter = isset($_GET['category']) ? $_GET['category'] : '';
 $search_query = isset($_GET['search_query']) ? $_GET['search_query'] : '';
 
@@ -23,6 +32,8 @@ if ($search_query) {
 
 
 $rows = mysqli_query($conn, $query);
+
+
 ?>
 
 <!DOCTYPE html>
@@ -35,16 +46,17 @@ $rows = mysqli_query($conn, $query);
     <!-- Include Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-  
         body {
             background-color: #f5f5f5;
         }
 
         .header-image {
-            background-image: url('image/background.jpg'); /* Replace 'your-image-url.jpg' with your image URL */
+            background-image: url('image/background.jpg');
+            /* Replace 'your-image-url.jpg' with your image URL */
             background-size: cover;
             background-position: center;
-            height: 400px; /* Adjust the height as needed */
+            height: 400px;
+            /* Adjust the height as needed */
             display: flex;
             filter: grayscale(90px);
             justify-content: center;
@@ -64,7 +76,7 @@ $rows = mysqli_query($conn, $query);
         }
 
         .sidebar {
-            
+
             height: 100%;
             width: 200px;
             background-color: #3b4140;
@@ -117,7 +129,7 @@ $rows = mysqli_query($conn, $query);
             max-width: 200px;
             height: auto;
             margin-right: 20px;
-            
+
         }
 
         .book-details {
@@ -164,50 +176,51 @@ $rows = mysqli_query($conn, $query);
         .btnfail:hover {
             background-color: darkred;
         }
+
         /* side bar */
         .sidebar {
-    background-color: #333;
-    color: #fff;
-    padding: 20px;
-}
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+        }
 
-.sidebar-heading {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-}
+        .sidebar-heading {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
 
-.dropdown-btn {
-    background-color: #555;
-    color: #fff;
-    padding: 10px 15px;
-    border: none;
-    cursor: pointer;
-    width: 100%;
-    text-align: left;
-}
+        .dropdown-btn {
+            background-color: #555;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+        }
 
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #444;
-    min-width: 160px;
-    z-index: 1;
-}
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #444;
+            min-width: 160px;
+            z-index: 1;
+        }
 
-.dropdown-content a {
-    color: #fff;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-}
+        .dropdown-content a {
+            color: #fff;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
 
-.dropdown-content a:hover {
-    background-color: #666;
-}
+        .dropdown-content a:hover {
+            background-color: #666;
+        }
 
-.dropdown:hover .dropdown-content {
-    display: block;
-}
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
     </style>
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
@@ -227,7 +240,7 @@ $rows = mysqli_query($conn, $query);
             <div class="dropdown">
                 <button class="dropdown-btn">Menu</button>
                 <div class="dropdown-content">
-                    <a href="userprofile.html">User Profile</a>
+                    <a href="userprofile.php">User Profile</a>
                     <a href="dashboard.php">Book Tab</a>
                     <a href="bookreservation.php">Book Reservation</a>
                     <a href="index.php">Log out</a>
@@ -236,34 +249,75 @@ $rows = mysqli_query($conn, $query);
         </nav>
 
         <div class="content">
-        <div class="search-bar">
-    <form id="searchForm" method="get" action="">
-        <div class="input-group">
-            <input type="text" class="form-control" placeholder="Search books..." name="search_query">
-            <div class="header_search search search_open <?php echo $class?>">
-                                        <a href="#"><i class="icon-magnifier icons"></i></a>
-                                    </div>
-        </div>
-    </form>
-    
-</div>
+            <div class="search-bar">
+                <form id="searchForm" method="get" action="">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search books..." name="search_query"
+                            id="searchInput">
+                        <div class="header_search search search_open <?php echo $class ?>">
+                            <a href="#"><i class="icon-magnifier icons"></i></a>
+                        </div>
+                        <input type="submit" value="search" name="searchSubmit" style="display:none;">
+                    </div>
+                </form>
+                <div id="suggestions">
+                    <!-- <p>Data1</p>
+                    <p>Data2</p> -->
+                </div>
+            </div>
+            <!-- <script>
+                document.getElementById("searchInput").addEventListener("input", function (event) {
+                    let query = event.target.value;
+                    if (query.trim() !== '') {
+                        fetchSuggestions(query);
+                    } else {
+                        clearSuggestions();
+                    }
+                });
 
+                function fetchSuggestions(query) {
+                    setTimeout(function () {
+                        
+                        let suggestions = ['Book 1', 'Book 2', 'Book 3'];
+
+                        
+                        displaySuggestions(suggestions);
+                    }, 400); 
+                    // let suggestions = ['Book 1', 'Book 2', 'Book 3'];
+                    // displaySuggestions(suggestions);
+                }
+
+                function displaySuggestions(suggestions) {
+                    let suggestionsDiv = document.getElementById("suggestions");
+                    suggestionsDiv.innerHTML = '';
+
+                    suggestions.forEach(suggestion => {
+                        let p = document.createElement('p');
+                        p.textContent = suggestion;
+                        suggestionsDiv.appendChild(p);
+                    });
+                }
+
+                function clearSuggestions() {
+                    document.getElementById("suggestions").innerHTML = '';
+                }
+            </script> -->
             <div class="d-flex justify-content-between">
                 <div class="book-category">
                     <label for="category">Select Book Category:</label>
                     <select id="category" class="form-control">
                         <option value="All">All</option>
                         <option value="Adventure stories">Adventure stories</option>
-            <option value="Education">Education</option>
-            <option value="Crime">Crime</option>
-            <option value="Historical fiction">Historical fiction</option>
-            <option value="Horror">Horror</option>
-            <option value="Literary fiction">Literary fiction</option>
-            <option value="Mystery">Mystery</option>
-           
-            <option value="Romance">Romance</option>
-            <option value="Science fiction">Science fiction</option>
-            <option value="pdf">PDF </option>
+                        <option value="Education">Education</option>
+                        <option value="Crime">Crime</option>
+                        <option value="Historical fiction">Historical fiction</option>
+                        <option value="Horror">Horror</option>
+                        <option value="Literary fiction">Literary fiction</option>
+                        <option value="Mystery">Mystery</option>
+
+                        <option value="Romance">Romance</option>
+                        <option value="Science fiction">Science fiction</option>
+                        <option value="pdf">PDF </option>
                     </select>
                 </div>
 
@@ -272,62 +326,86 @@ $rows = mysqli_query($conn, $query);
                     <select id="language" class="form-control">
                         <option value="english">English</option>
                         <option value="sinhala">Sinhala </option>
-                       
+
                     </select>
                 </div>
             </div>
-              <br>
+            <br>
 
             <div class="book-list">
-                <?php foreach ($rows as $row) : ?>
+                <?php foreach ($rows as $row): ?>
                     <div class="book">
-                        <img src="Newfolder/<?php echo $row["Image"]; ?>" alt="Book Image"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <img src="Newfolder/<?php echo $row["Image"]; ?>" alt="Book Image">
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         <div class="book-details">
-                            <div class="book-id">Id : <?php echo $row["Bookid"]; ?></div>
-                            <div class="book-title">Book name : <?php echo $row["Bookname"]; ?></div><br>
-                            <div class="book-author">Author name : <?php echo $row["Authorname"]; ?></div><br>
-                            <div class="Category">Category : <?php echo $row["Category"]; ?></div><br>
+                            <div class="book-id">Id :
+                                <?php echo $row["Bookid"]; ?>
+                            </div>
+                            <div class="book-title">Book name :
+                                <?php echo $row["Bookname"]; ?>
+                            </div><br>
+                            <div class="book-author">Author name :
+                                <?php echo $row["Authorname"]; ?>
+                            </div><br>
+                            <div class="Category">Category :
+                                <?php echo $row["Category"]; ?>
+                            </div><br>
 
-                            <form class="reservation-form" action="book_reservation_handler.php" method = "POST">
+                            <form class="reservation-form" action="book_reservation_handler.php" method="POST">
                                 <input type="hidden" name="book_id" value="<?php echo $row["Bookid"]; ?>">
                                 <input type="hidden" name="book_Name" value="<?php echo $row["Bookname"]; ?>">
-                                <?php if($row["reservation"]==1){ ?>
-                                <button type="button" class="btnfail" name="reserve" onclick="customAlert()" >Book Reservation</button>
+                                <?php if ($row["reservation"] == 1) { ?>
+                                    <button type="button" class="btnfail" name="reserve" onclick="customAlert()">Book
+                                        Reservation</button>
                                 <?php } ?>
 
-                                <?php if($row["reservation"]==0){ ?>
-                                <button type="submit" class="btn btn-success" name="reserve" onclick='reserveBook(<?php $row["Bookid"]; ?> )'>Book Reservation</button>
+                                <?php if ($row["reservation"] == 0) { ?>
+                                    <button type="submit" class="btn btn-success" name="reserve"
+                                        onclick='reserveBook(<?php $row["Bookid"]; ?> )'>Book Reservation</button>
                                 <?php } ?>
                             </form>
                             <br>
-                            <form action="addcomment.php" method = "POST">    
-                                    
-                            </form>
+
+
+
                             <div class="comment-form">
-                <textarea id="commentText_<?php echo $row["Bookid"]; ?>" placeholder="Add your comment"></textarea>
-&nbsp;&nbsp;&nbsp;
-                
-                <button onclick='addComment(<?php echo $row["Bookid"]; ?>)'>Submit</button>
+                                <form action="addcomment.php" method="POST">
+                                    <!-- <textarea id="commentText_<?php echo $row["Bookid"]; ?>" placeholder="Add your comment"></textarea> -->
+                                    &nbsp;&nbsp;&nbsp;
+                                    <input type='hidden' name='userID' value='<?php echo $userId ?>'>
+                                    <input type='hidden' name='bookID' value='<?php echo $row["Bookid"]; ?>'>
+                                    <input type="text" name='comment' placeholder="Add your comment">
+                                    <input type='submit' value="Submit">
 
+                                </form>
+                            </div>
 
-            </div>
-            
-            <div class="user-comments" id="commentsContainer_<?php echo $row["Bookid"]; ?>">
-        <h6>User Comments:</h6>
-        <?php
-        // Fetch and display comments for the current book
-        $bookId = $row["Bookid"];
-        $commentsQuery = "SELECT * FROM comments WHERE Bookid = '$bookId'";
-        $commentsResult = mysqli_query($conn, $commentsQuery);
+                            <div class="user-comments" id="commentsContainer_<?php echo $row["Bookid"]; ?>">
+                                <h6>User Comments:</h6>
+                                <?php
+                                // Fetch and display comments for the current book
+                                $bookId = $row["Bookid"];
+                                $commentsQuery = "SELECT * FROM comments WHERE Bookid = '$bookId'";
+                                $commentsResult = mysqli_query($conn, $commentsQuery);
 
-        while ($comment = mysqli_fetch_assoc($commentsResult)) {
-            echo "<div class='comment'>";
-            echo "<strong>User:</strong> " . $comment['user_id'] . "<br>";
-            echo "<strong>Comment:</strong> " . $comment['comment_text'];
-            echo "</div>";
-        }
-        ?>
-    </div>
+                                while ($comment = mysqli_fetch_assoc($commentsResult)) {
+                                    $sqlUserNAME = "SELECT username FROM usersignup WHERE userid = '{$comment['userid']}'";
+                                    $result = mysqli_query($conn, $sqlUserNAME);
+                                    if ($result->num_rows > 0) {
+
+                                        $rowUserName = mysqli_fetch_assoc($result);
+                                        $username = $rowUserName['username'];
+                                    } else {
+                                        $username = "Unknown";
+                                    }
+
+                                    echo "<div class='comment'>";
+                                    echo "<strong>User - </strong> " . $username . "  |    ";
+                                    echo "<strong>Comment - </strong> " . $comment['comment_text'];
+                                    echo "</div>";
+                                }
+                                ?>
+                            </div>
                         </div>
                     </div>
                 <?php endforeach; ?>
@@ -335,83 +413,82 @@ $rows = mysqli_query($conn, $query);
         </div>
     </div>
     <script>
-    function reserveBook(bookId , bookName) {
-        alert("reservation");
-        var form = document.getElementById('reservationForm_' + bookId);
-        var button = form.getElementsByTagName('button')[0];
-        
-       // Assuming you use jQuery for easier AJAX
-        $.ajax({
-            type: 'POST',
-            url: 'book_reservation_handler.php',
-            data: {
-                "book_Id": bookID,
-                "book_Name" : bookName
-            },
-            success: function(response) {
-                var result = JSON.parse(response);
+        function reserveBook(bookId, bookName) {
+            alert("reservation");
+            var form = document.getElementById('reservationForm_' + bookId);
+            var button = form.getElementsByTagName('button')[0];
 
-                if (result.status === 'success') {
-                    alert(result.message);
-                    button.style.backgroundColor = 'red'; // Change the button color to red for success
-                } else if (result.status === 'unavailable') {
-                    alert(result.message);
-                    button.style.backgroundColor = 'red'; // Change the button color to red for unavailable
-                } else {
-                    alert(result.message);
+            // Assuming you use jQuery for easier AJAX
+            $.ajax({
+                type: 'POST',
+                url: 'book_reservation_handler.php',
+                data: {
+                    "book_Id": bookID,
+                    "book_Name": bookName
+                },
+                success: function (response) {
+                    var result = JSON.parse(response);
+
+                    if (result.status === 'success') {
+                        alert(result.message);
+                        button.style.backgroundColor = 'red'; // Change the button color to red for success
+                    } else if (result.status === 'unavailable') {
+                        alert(result.message);
+                        button.style.backgroundColor = 'red'; // Change the button color to red for unavailable
+                    } else {
+                        alert(result.message);
+                    }
+                },
+                error: function () {
+                    alert('Error in AJAX request');
                 }
-            },
-            error: function() {
-                alert('Error in AJAX request');
-            }
-        });
-    }
-    </script>
-   <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
-
-   <script>
-   function addComment(bookId) {
-    var commentText = document.getElementById('commentText_' + bookId).value;
-    var commentContainer = document.getElementById('commentsContainer_' + bookId);
-
-    $.ajax({
-        type: 'POST',
-        url: 'comments.php', // Update the URL to your comment handler script
-        data: {
-            book_id: bookId,
-            comment: commentText
-        },
-        success: function(response) {
-            var result = JSON.parse(response);
-
-            if (result.status === 'success') {
-                // Assuming you want to display the comment immediately
-                var commentElement = document.createElement('div');
-                commentElement.className = 'comment';
-                commentElement.innerHTML = "<strong>User:</strong> You<br><strong>Comment:</strong> " + commentText;
-                commentContainer.appendChild(commentElement);
-
-                // Clear the input field
-                document.getElementById('commentText_' + bookId).value = '';
-            } else {
-                alert(result.message);
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error('AJAX Error: ' + status + ' - ' + error);
-            alert('Error in AJAX request');
+            });
         }
-    });
-}
+    </script>
+    <script type="text/javascript"
+        src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
-function customAlert() {
-    alert("Book does't axist!");
-}
 
-</script>
+    <script>
+        function addComment(bookId) {
+            var commentText = document.getElementById('commentText_' + bookId).value;
+            var commentContainer = document.getElementById('commentsContainer_' + bookId);
+
+            $.ajax({
+                type: 'POST',
+                url: 'comments.php', // Update the URL to your comment handler script
+                data: {
+                    book_id: bookId,
+                    comment: commentText
+                },
+                success: function (response) {
+                    var result = JSON.parse(response);
+
+                    if (result.status === 'success') {
+                        // Assuming you want to display the comment immediately
+                        var commentElement = document.createElement('div');
+                        commentElement.className = 'comment';
+                        commentElement.innerHTML = "<strong>User:</strong> You<br><strong>Comment:</strong> " + commentText;
+                        commentContainer.appendChild(commentElement);
+
+                        // Clear the input field
+                        document.getElementById('commentText_' + bookId).value = '';
+                    } else {
+                        alert(result.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('AJAX Error: ' + status + ' - ' + error);
+                    alert('Error in AJAX request');
+                }
+            });
+        }
+
+        function customAlert() {
+            alert("Book does't axist!");
+        }
+    </script>
 
 </body>
 
 </html>
-

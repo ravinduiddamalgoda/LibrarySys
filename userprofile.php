@@ -107,7 +107,7 @@
             <div class="dropdown">
                 <button class="dropdown-btn">Menu</button>
                 <div class="dropdown-content">
-                    <a href="userprofile.html">User Profile</a>
+                    <a href="userprofile.php">User Profile</a>
                     <a href="dashboard.php">Book Tab</a>
                     <a href="bookreservation.php">Book Reservation</a>
                     <a href="index.php">Log out</a>
@@ -133,11 +133,46 @@
                     <h2>User Profile</h2>
                     <!-- User information section -->
                     <div class="user-info">
-                        <p><strong>User ID:</strong> 123</p>
-                        <p><strong>User Name:</strong> John Doe</p>
-                        <p><strong>Email:</strong> john@example.com</p>
+                        <?php
+                        // Connect to the database
+                        $servername = "localhost";
+                        $username = "root";
+                        $password = "";
+                        $dbname = "bookdb";
+                    
+                        $conn = new mysqli($servername, $username, $password, $dbname);
+                    
+                        if ($conn->connect_error) {
+                            die("Connection failed: " . $conn->connect_error);
+                        }
                         
+                        session_start();
+
+                        if (isset($_SESSION['user_id'])) {
+                            $userId = $_SESSION['user_id'];
+                        } else {
+                            echo "User ID not found in session.";
+                        }
+                        // Retrieve user data from the usersignup table
+                        $sql = "SELECT * FROM usersignup WHERE userid = '$userId'";
+                        $result = mysqli_query($conn, $sql);
+
+                        // Display user data
+                        if (mysqli_num_rows($result) > 0) {
+                            while ($row = mysqli_fetch_assoc($result)) {
+                                echo "<p><strong>User ID:</strong> " . $row['userid'] . "</p>";
+                                echo "<p><strong>User Name:</strong> " . $row['username'] . "</p>";
+                                echo "<p><strong>Email:</strong> " . $row['email'] . "</p>";
+                            }
+                        } else {
+                            echo "No user data found.";
+                        }
+
+                        // Close the database connection
+                        mysqli_close($conn);
+                        ?>
                     </div>
+                </div>
         
                     <!-- Books Received table -->
                     <div class="books-received">

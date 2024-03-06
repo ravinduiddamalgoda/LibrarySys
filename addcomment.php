@@ -20,7 +20,24 @@ if (isset($_SESSION['user_id'])) {
     echo "User ID not found in session.";
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Handle form submission
+    $bookId = $_POST['bookID'];
+    $comment = $_POST['comment'];
+    $userID = $_POST['userID'];
 
+    echo $bookId;
+    echo $comment;
+    echo $userID;
+    
+    $sql = "INSERT INTO comments (userid, Bookid, comment_text) VALUES ('$userID', '$bookId', '$comment')";
 
+    if($result = $conn->query($sql)) {
+        echo "Comment added successfully.";
+        header("Location:dashboard.php"); // Refresh the page
+    } else {
+        echo "Error: " . $sql . "<br>" . $conn->error;
+    }
+}
 
 ?>
