@@ -128,6 +128,7 @@ button {
         <a href="">Book Orders</a>
         <a href="addauthor.php">Add Author</a>
         <a href="authorrecord.php">Author Record</a>
+        <a href="blacklist.php">BlackList</a>
     </div>
 
     

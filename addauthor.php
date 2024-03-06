@@ -103,14 +103,15 @@ $conn->close();
   <div class="navigation">
     <a href="bookreport.php">Book Report</a>
     <a href="addbook.php" >Add Book</a>
-    <!-- <a href="">Book Reservation</a> -->
+    <!-- <a href="bookreservation.php">Book Reservation</a> -->
     <a href="adduser.php">Add Users</a>
     <a href="deleteuser.php">User Report</a>
     <a href="issuebook.php">Issue Book</a>
     <a href="issuebookreport.php">Issue Report</a>
-    <a href="">Book Orders</a>
+    <!-- <a href="">Book Orders</a> -->
     <a href="" class="active">Add Author</a>
     <a href="authorrecord.php">Author Record</a>
+    <a href="blacklist.php">BlackList</a>
 </div>
 
 <div class="add-author-form">
