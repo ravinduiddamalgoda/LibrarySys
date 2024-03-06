@@ -229,7 +229,7 @@ $rows = mysqli_query($conn, $query);
                 <div class="dropdown-content">
                     <a href="userprofile.html">User Profile</a>
                     <a href="dashboard.php">Book Tab</a>
-                    <a href="bookreservation.html">Book Reservation</a>
+                    <a href="bookreservation.php">Book Reservation</a>
                     <a href="index.php">Log out</a>
                 </div>
             </div>
