@@ -31,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION["user_id"] = $row["userid"];
 
                 // Redirect to the dashboard or profile page
-                header("Location: userprofile.html");
+                header("Location: userprofile.php");
                 exit();
             } else {
                 $error_message = "Invalid username or password";
