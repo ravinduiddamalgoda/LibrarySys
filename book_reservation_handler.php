@@ -1,4 +1,5 @@
 <?php
+require 'mailfunc.php';
 
 $servername = "localhost";
 $username = "root";

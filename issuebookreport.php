@@ -1,4 +1,7 @@
 <?php
+
+require 'mailfunc.php';
+
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -122,7 +125,37 @@ $result = $conn->query($sql);
                 echo "<td><input type='submit' value='returned'  name='submit_button' class='delete-btn' ></td>";
                 echo "</form>";
                 echo "</tr>";
+
+                $dateToFUnc = $row["Returndate"];
+                if (isWithinTwoDays($dateToFUnc) >= -2 ) {
+                    $SqlEmail = "SELECT * FROM usersignup WHERE userid = '{$row["UserID"]}'";     
+                    $resultEmail = $conn->query($SqlEmail);
+                    if ($resultEmail->num_rows > 0) {
+                        while ($rowEmail = $resultEmail->fetch_assoc()) {
+                            $email = $rowEmail['email'];
+                            $subject = "Book Return Reminder";
+                            $message = "Dear User, \n\nThis is a reminder that the return date for the book '{$row["Bookname"]}' is approaching. Please return the book to the library as soon as possible to avoid any fines. \n\nThank you.";
+                            sendEmail($rowEmail['fullname'] , $email, $subject, $message);
+                        }
+                    }               
+                }
             }
+
+
+
+            function isWithinTwoDays($givenDate) {
+                $today = date("Y-m-d"); // Today's date
+              
+                
+                $todayTimestamp = strtotime($today);
+                $givenDateTimestamp = strtotime($givenDate);
+              
+                
+                $dayDiff = (int)abs(($todayTimestamp - $givenDateTimestamp) / (60 * 60 * 24));
+              
+                return $dayDiff <= 2;
+              }
+              
             ?>
 
         </table>
