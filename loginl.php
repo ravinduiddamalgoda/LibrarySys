@@ -106,6 +106,10 @@ $db->close();
             <input type="password" name="password" class="login-input" placeholder="Password" required>
 
             <button type="submit" class="login-button">Login</button>
+            
+            <div class="forgot-password">
+                <a href="adminlogin.php">Are u an Admin? </a>
+            </div>
 
             <div class="forgot-password">
                 <a href="forgot_password.php">Forgot Password?</a>
